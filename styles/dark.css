@@ -320,12 +320,16 @@ html[data-alledrogo="on"] tbody tr:nth-child(even) > td {
 }
 
 /* --- Modale, menu, podpowiedzi, dymki ----------------------------------- */
-html[data-alledrogo="on"] dialog,
-html[data-alledrogo="on"] [role="dialog"],
-html[data-alledrogo="on"] [role="alertdialog"],
-html[data-alledrogo="on"] [aria-modal="true"] {
+/* Natywny <dialog> to zawsze panel. Elementy z role="dialog" w Allegro
+   bywają pełnoekranowymi nakładkami — ich tło zostawiamy skryptowi,
+   który przemaluje tylko faktycznie jasne panele. */
+html[data-alledrogo="on"] dialog {
   background-color: var(--adm-surface-2) !important;
   color: var(--adm-text) !important;
+  border-color: var(--adm-border) !important;
+}
+
+html[data-alledrogo="on"] :is([role="dialog"], [role="alertdialog"], [aria-modal="true"]) {
   border-color: var(--adm-border) !important;
 }
 
@@ -472,4 +476,10 @@ html[data-alledrogo="on"] img[data-alledrogo-icon="mono"] {
 html[data-alledrogo="on"] :is(img:not([data-alledrogo-icon]), picture, video, canvas, embed, object) {
   filter: none;
   mix-blend-mode: normal;
+}
+
+/* Szary placeholder Metrum (widoczny, zanim lazy-load wczyta zdjęcie)
+   razi na ciemnym tle — przygaszamy go. To grafika zastępcza, nie zdjęcie. */
+html[data-alledrogo="on"] img[src*="metrum-placeholder"] {
+  opacity: 0.12;
 }
