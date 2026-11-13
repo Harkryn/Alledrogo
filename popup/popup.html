@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alledrogo</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="head">
+    <img src="../icons/icon-48.png" width="32" height="32" alt="">
+    <div>
+      <h1>Alledrogo</h1>
+      <p class="sub">Ciemny motyw dla Allegro</p>
+    </div>
+  </header>
+
+  <main>
+    <label class="row" for="enabled">
+      <span class="label">
+        <span class="title">Ciemny motyw</span>
+        <span class="hint" id="enabled-state">Włączony</span>
+      </span>
+      <input type="checkbox" id="enabled" class="switch" role="switch">
+    </label>
+
+    <label class="row" for="followSystem">
+      <span class="label">
+        <span class="title">Tryb auto</span>
+        <span class="hint">Tylko gdy system ma ciemny motyw</span>
+      </span>
+      <input type="checkbox" id="followSystem" class="switch" role="switch">
+    </label>
+
+    <p class="status" id="status" aria-live="polite"></p>
+  </main>
+
+  <footer class="foot">
+    <span id="version"></span>
+    <a href="https://github.com/Harkryn/Alledrogo" target="_blank" rel="noopener">GitHub</a>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>
