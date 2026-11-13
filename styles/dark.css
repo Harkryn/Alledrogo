@@ -1,0 +1,475 @@
+/*
+ * Alledrogo — ciemny motyw dla Allegro
+ *
+ * Arkusz jest wstrzykiwany zawsze, ale działa wyłącznie, gdy <html> ma
+ * atrybut data-alledrogo="on" (ustawia go content/content.js).
+ *
+ * Warstwy:
+ *   1. Paleta Alledrogo (zmienne --adm-*)
+ *   2. Nadpisanie tokenów design systemów Allegro (Metrum --m-color-*,
+ *      Dune --semantic-color-*, tokeny typografii --text*-color)
+ *   3. Elementy semantyczne i role ARIA (formularze, tabele, modale, ...)
+ *   4. Atrybuty data-alledrogo-* nadawane przez skrypt elementom, które mają
+ *      jasne tło / ciemny tekst wpisane na sztywno w hashowanych klasach
+ *   5. Ochrona multimediów (zdjęcia, logotypy, wideo nie są przekolorowywane)
+ */
+
+/* ---------------------------------------------------------------------- */
+/* 1. Paleta                                                              */
+/* ---------------------------------------------------------------------- */
+html[data-alledrogo="on"] {
+  --adm-bg: #121212;
+  --adm-surface: #1e1e1e;
+  --adm-surface-2: #262626;
+  --adm-surface-3: #2e2e2e;
+  --adm-glass: rgba(30, 30, 30, 0.88);
+  --adm-border: #3a3a3a;
+  --adm-border-muted: #2c2c2c;
+  --adm-border-strong: #555555;
+  --adm-text: #e4e4e4;
+  --adm-text-2: #a8a8a8;
+  --adm-text-3: #7c7c7c;
+  --adm-accent: #ff5a00;          /* oryginalny pomarańczowy Allegro (tła) */
+  --adm-accent-text: #ff8a4c;     /* jaśniejszy wariant do tekstu na ciemnym */
+  --adm-accent-soft: rgba(255, 90, 0, 0.16);
+  --adm-link: #4fd1bc;
+  --adm-link-hover: #7fe0d0;
+  --adm-link-visited: #9fb8e8;
+  --adm-success: #6fd46f;
+  --adm-error: #ff7b6b;
+  --adm-warning: #ffcf5c;
+  --adm-info: #78a3ff;
+  --adm-shadow: rgba(0, 0, 0, 0.6);
+
+  color-scheme: dark;
+  background-color: var(--adm-bg) !important;
+  color: var(--adm-text);
+  scrollbar-color: #4a4a4a var(--adm-bg);
+}
+
+/* ---------------------------------------------------------------------- */
+/* 2. Tokeny design systemów Allegro                                      */
+/*    Tokeny są deklarowane na body oraz na fragmentach strony, więc       */
+/*    nadpisujemy je na każdym elemencie (custom properties z !important   */
+/*    wygrywają z deklaracjami w hashowanych klasach).                     */
+/* ---------------------------------------------------------------------- */
+html[data-alledrogo="on"] body,
+html[data-alledrogo="on"] body * {
+  /* --- Metrum (starszy design system) --- */
+  --m-color-neutral-on-surface: #e4e4e4 !important;
+  --m-color-neutral-on-surface-rgb: 228, 228, 228 !important;
+  --m-color-neutral-on-surface-primary: #e4e4e4 !important;
+  --m-color-neutral-on-surface-secondary: #a8a8a8 !important;
+  --m-color-neutral-surface: #1e1e1e !important;
+  --m-color-neutral-surface-rgb: 30, 30, 30 !important;
+  --m-color-neutral-background: #121212 !important;
+  --m-color-neutral-surface-container: #262626 !important;
+  --m-color-neutral-surface-inverted: #3a3a3a !important;
+  --m-color-neutral-surface-light: rgba(30, 30, 30, 0.85) !important;
+  --m-color-neutral-border: rgba(255, 255, 255, 0.22) !important;
+  --m-color-neutral-border-muted: rgba(255, 255, 255, 0.12) !important;
+  --m-color-text: #e4e4e4 !important;
+  --m-color-text-secondary: #a8a8a8 !important;
+  --m-color-card: #1e1e1e !important;
+  --m-color-desk: #121212 !important;
+  --m-color-haze-50: #1a1a1a !important;
+  --m-color-haze-100: #262626 !important;
+  --m-color-haze-200: #333333 !important;
+  --m-color-table-zebra: #1a1a1a !important;
+  --m-color-bg-elevation: #262626 !important;
+  --m-color-bg-carousel-surface: #1a2530 !important;
+  --m-color-highlight: rgba(255, 255, 255, 0.06) !important;
+  --m-color-semitransparent: rgba(30, 30, 30, 0.85) !important;
+  --m-color-semitransparent-dark: rgba(30, 30, 30, 0.85) !important;
+  --m-color-white-80p: rgba(30, 30, 30, 0.85) !important;
+  --m-color-price: #f0f0f0 !important;
+  --m-color-price-bargain: #6fd46f !important;
+  --m-color-bubble-admin: #2e2e2e !important;
+  --m-color-bubble-light: #262626 !important;
+  --m-color-bubble-light-border: #3a3a3a !important;
+  --m-color-message-light: #262626 !important;
+  --m-color-message-tip: #2e2e2e !important;
+  --m-color-active: #2e2e2e !important;
+  --m-color-progress: #3a3a3a !important;
+  --m-color-accent-secondary: #2ab9a3 !important;
+  --m-color-accent-tertiary: #4fd1bc !important;
+  --m-color-accent-tertiary-visited: #9fb8e8 !important;
+  --m-color-state-tertiary-enabled: #4fd1bc !important;
+  --m-color-state-tertiary-hover: #7fe0d0 !important;
+  --m-color-state-tertiary-focus: #7fe0d0 !important;
+  --m-color-state-tertiary-pressed: #a9eddd !important;
+  --m-color-state-tertiary-visited: #9fb8e8 !important;
+  --m-color-state-secondary-enabled: #2ab9a3 !important;
+  --m-color-state-secondary-hover: #55c7b5 !important;
+  --m-color-state-secondary-focus: #7fd5c8 !important;
+  --m-color-state-secondary-pressed: #7fd5c8 !important;
+  --m-color-state-secondary-visited: #2ab9a3 !important;
+  --m-color-state-selected: #ff7b33 !important;
+  --m-color-delivery-prediction-fast: #6fd46f !important;
+  --m-color-delivery-prediction-long: #ffcf5c !important;
+  --m-color-delivery-prediction-xmas: #ff7b6b !important;
+  --m-color-featured-text-green: #92e390 !important;
+  --m-color-featured-text-blue: #83b9dd !important;
+  --m-color-featured-text-purple: #83b9dd !important;
+  --m-color-featured-text-yellow: #fcdb6c !important;
+  --m-color-decoration-tertiary: #3a3a3a !important;
+
+  /* --- Dune (nowszy design system) --- */
+  --semantic-color-neutral-surface: #1e1e1e !important;
+  --semantic-color-neutral-background: #121212 !important;
+  --semantic-color-neutral-surfaceContainer: #262626 !important;
+  --semantic-color-neutral-surfaceZebra: #2a2a2a !important;
+  --semantic-color-neutral-surfaceInverted: #3a3a3a !important;
+  --semantic-color-neutral-surfaceMuted: rgba(255, 255, 255, 0.12) !important;
+  --semantic-color-neutral-surfaceDark: rgba(0, 0, 0, 0.6) !important;
+  --semantic-color-neutral-surfaceLight: rgba(30, 30, 30, 0.85) !important;
+  --semantic-color-neutral-onSurface: #e4e4e4 !important;
+  --semantic-color-neutral-onSurfacePrimary: #e4e4e4 !important;
+  --semantic-color-neutral-onSurfaceSecondary: #a8a8a8 !important;
+  --semantic-color-neutral-border: rgba(255, 255, 255, 0.28) !important;
+  --semantic-color-neutral-borderMuted: rgba(255, 255, 255, 0.12) !important;
+  --semantic-color-surface-0-web: #1e1e1e !important;
+  --semantic-color-surface-elevated-web: #262626 !important;
+  --semantic-color-decoration-primary: #e4e4e4 !important;
+  --semantic-color-decoration-tertiary: #3a3a3a !important;
+  /* "secondary" w Dune jest czarne (np. obrysowane przyciski) */
+  --semantic-color-accent-secondary: #e4e4e4 !important;
+  --semantic-color-accent-onSecondary: #121212 !important;
+  --semantic-color-accent-onSecondaryInvertedVariant: #e4e4e4 !important;
+  --semantic-color-accent-tertiary: #bb92f4 !important;
+  --semantic-color-accent-tertiaryVisited: #d4b8f8 !important;
+  --semantic-color-state-secondary-enabled: #e4e4e4 !important;
+  --semantic-color-state-secondary-hover-web: rgba(228, 228, 228, 0.75) !important;
+  --semantic-color-state-secondary-pressed-web: #ffffff !important;
+  --semantic-color-state-secondary-focus-web: #ffffff !important;
+  --semantic-color-state-secondary-visited-web: #e4e4e4 !important;
+  --semantic-color-state-secondary-visitedHover-web: rgba(228, 228, 228, 0.75) !important;
+  --semantic-color-state-tertiary-enabled: #bb92f4 !important;
+  --semantic-color-state-tertiary-hover: #d4b8f8 !important;
+  --semantic-color-state-tertiary-pressed: #e7d6fc !important;
+  --semantic-color-state-tertiary-focus: #d4b8f8 !important;
+  --semantic-color-state-tertiary-visited: #c88ee0 !important;
+  --semantic-color-state-tertiary-visitedHover: #dab0eb !important;
+  --semantic-color-state-tertiary-visitedPressed: #e7c8f2 !important;
+  --semantic-color-state-selected: #e4e4e4 !important;
+  --semantic-color-state-disabled: rgba(228, 228, 228, 0.38) !important;
+  --semantic-color-state-onSurfacePrimary-hover-web: rgba(228, 228, 228, 0.75) !important;
+  --semantic-color-state-onSurfacePrimary-focus: #e4e4e4 !important;
+  --semantic-color-state-onSurfaceSecondary-hover-web: #cfcfcf !important;
+  --semantic-color-state-onSurfaceSecondary-focus-web: #cfcfcf !important;
+  --semantic-color-stateOverlay-disabled: rgba(255, 255, 255, 0.12) !important;
+  --semantic-color-stateOverlay-secondary-pressed-web: rgba(255, 255, 255, 0.12) !important;
+  --semantic-color-stateOverlay-onSurfaceSecondary-pressed-web: rgba(255, 255, 255, 0.12) !important;
+  --semantic-color-stateOverlay-onSecondarySurfaceInvertedVariant-pressed-web: rgba(255, 255, 255, 0.12) !important;
+  --semantic-color-table-hover: rgba(255, 255, 255, 0.04) !important;
+  --semantic-color-table-hoverBackground: #262626 !important;
+  --semantic-color-table-selected: #2a2433 !important;
+  --semantic-color-tag-warning: #3d3210 !important;
+  --semantic-color-tag-danger: #3d1a16 !important;
+  --semantic-color-tag-success: #1a3318 !important;
+  --semantic-color-tag-information: #172a45 !important;
+  --semantic-color-tag-payment: #172a45 !important;
+  --semantic-color-tag-discount: #1a3318 !important;
+  --semantic-color-tag-notice: #3d2412 !important;
+  --semantic-color-tag-background-warning: #ffd97a !important;
+  --semantic-color-tag-background-danger: #ffb09f !important;
+  --semantic-color-tag-background-success: #a4cf96 !important;
+  --semantic-color-tag-background-information: #aec2ff !important;
+  --semantic-color-tag-background-payment: #aec2ff !important;
+  --semantic-color-tag-background-discount: #a4cf96 !important;
+  --semantic-color-tag-background-notice: #ffb28f !important;
+  --semantic-color-tooltip-background: #3a3a3a !important;
+  --semantic-color-tooltip-text: #f0f0f0 !important;
+  --semantic-color-overlay-shadow: rgba(0, 0, 0, 0.6) !important;
+  --semantic-color-dropdown-boxShadow: rgba(0, 0, 0, 0.6) !important;
+  --semantic-color-price-bestPrice: #6fd46f !important;
+  --semantic-color-featured-text-green: #a4cf96 !important;
+  --semantic-color-featured-text-yellow: #ffd97a !important;
+  --semantic-color-featured-text-blue: #aec2ff !important;
+  --semantic-color-featured-text-red: #ffb09f !important;
+  --semantic-color-featured-text-purple: #d4b8f8 !important;
+  --semantic-color-social-github: #e4e4e4 !important;
+  --semantic-color-social-x: #e4e4e4 !important;
+  --semantic-color-social-instagram: #e4e4e4 !important;
+  --semantic-color-social-tiktok: #e4e4e4 !important;
+
+  /* --- Tokeny typografii --- */
+  --textDisplay-color: #e4e4e4 !important;
+  --textHeadline-color: #e4e4e4 !important;
+  --textTitle-color: #e4e4e4 !important;
+  --textBody-color: #e4e4e4 !important;
+  --textCaption-color: #a8a8a8 !important;
+  --textBodyPrimaryColor-color: #e4e4e4 !important;
+  --textCaptionPrimaryColor-color: #e4e4e4 !important;
+  --textTitlePrimaryColor-color: #e4e4e4 !important;
+  --textBodySecondaryColor-color: #a8a8a8 !important;
+  --textCaptionSecondaryColor-color: #a8a8a8 !important;
+  --textTitleSecondaryColor-color: #a8a8a8 !important;
+  --textBodyDisabledColor-color: #6e6e6e !important;
+  --textCaptionDisabledColor-color: #6e6e6e !important;
+  --textTitleDisabledColor-color: #6e6e6e !important;
+  --textBodyErrorColor-color: #ff7b6b !important;
+  --textCaptionErrorColor-color: #ff7b6b !important;
+  --textField-input-placeholderColor: #8a8a8a !important;
+
+  /* --- Obramowania rysowane box-shadow --- */
+  --border-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12) !important;
+  --border-shadow-hover: inset 0 0 0 2px rgba(255, 255, 255, 0.2) !important;
+}
+
+/* ---------------------------------------------------------------------- */
+/* 3. Elementy bazowe                                                     */
+/* ---------------------------------------------------------------------- */
+html[data-alledrogo="on"] body {
+  background-color: var(--adm-bg) !important;
+  color: var(--adm-text);
+}
+
+html[data-alledrogo="on"] ::selection {
+  background: rgba(255, 90, 0, 0.45);
+  color: #ffffff;
+}
+
+html[data-alledrogo="on"] hr {
+  border-color: var(--adm-border) !important;
+  background-color: var(--adm-border) !important;
+}
+
+/* --- Pola formularzy ---------------------------------------------------- */
+html[data-alledrogo="on"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="image"]),
+html[data-alledrogo="on"] textarea,
+html[data-alledrogo="on"] select,
+html[data-alledrogo="on"] [contenteditable="true"],
+html[data-alledrogo="on"] [role="textbox"],
+html[data-alledrogo="on"] [role="searchbox"],
+html[data-alledrogo="on"] [role="combobox"]:is(input, [contenteditable]) {
+  background-color: var(--adm-surface) !important;
+  color: var(--adm-text) !important;
+  border-color: var(--adm-border-strong) !important;
+  caret-color: var(--adm-accent-text);
+}
+
+html[data-alledrogo="on"] input::placeholder,
+html[data-alledrogo="on"] textarea::placeholder {
+  color: #8a8a8a !important;
+  opacity: 1;
+}
+
+html[data-alledrogo="on"] input:-webkit-autofill,
+html[data-alledrogo="on"] input:-webkit-autofill:hover,
+html[data-alledrogo="on"] input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--adm-text) !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--adm-surface-2) inset !important;
+  transition: background-color 9999s ease-out 0s;
+}
+
+html[data-alledrogo="on"] input:focus-visible,
+html[data-alledrogo="on"] textarea:focus-visible,
+html[data-alledrogo="on"] select:focus-visible {
+  border-color: var(--adm-accent) !important;
+  outline-color: var(--adm-accent) !important;
+}
+
+html[data-alledrogo="on"] option,
+html[data-alledrogo="on"] optgroup {
+  background-color: var(--adm-surface) !important;
+  color: var(--adm-text) !important;
+}
+
+html[data-alledrogo="on"] fieldset {
+  border-color: var(--adm-border) !important;
+}
+
+html[data-alledrogo="on"] input[type="checkbox"],
+html[data-alledrogo="on"] input[type="radio"],
+html[data-alledrogo="on"] input[type="range"],
+html[data-alledrogo="on"] progress {
+  accent-color: var(--adm-accent);
+}
+
+/* --- Fokus (dostępność) ------------------------------------------------- */
+html[data-alledrogo="on"] :is(a, button, [role="button"], [role="tab"], [role="option"], [role="menuitem"], [tabindex]):focus-visible {
+  outline: 2px solid var(--adm-accent) !important;
+  outline-offset: 2px;
+}
+
+/* --- Tabele ------------------------------------------------------------- */
+html[data-alledrogo="on"] table,
+html[data-alledrogo="on"] [role="table"],
+html[data-alledrogo="on"] [role="grid"] {
+  border-color: var(--adm-border) !important;
+}
+
+html[data-alledrogo="on"] th,
+html[data-alledrogo="on"] td,
+html[data-alledrogo="on"] [role="columnheader"],
+html[data-alledrogo="on"] [role="rowheader"],
+html[data-alledrogo="on"] [role="cell"],
+html[data-alledrogo="on"] [role="gridcell"] {
+  border-color: var(--adm-border) !important;
+}
+
+html[data-alledrogo="on"] thead th,
+html[data-alledrogo="on"] [role="columnheader"] {
+  background-color: var(--adm-surface-2) !important;
+  color: var(--adm-text) !important;
+}
+
+html[data-alledrogo="on"] tbody tr:nth-child(even) > td {
+  background-color: rgba(255, 255, 255, 0.025);
+}
+
+/* --- Modale, menu, podpowiedzi, dymki ----------------------------------- */
+html[data-alledrogo="on"] dialog,
+html[data-alledrogo="on"] [role="dialog"],
+html[data-alledrogo="on"] [role="alertdialog"],
+html[data-alledrogo="on"] [aria-modal="true"] {
+  background-color: var(--adm-surface-2) !important;
+  color: var(--adm-text) !important;
+  border-color: var(--adm-border) !important;
+}
+
+html[data-alledrogo="on"] dialog::backdrop {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+html[data-alledrogo="on"] [role="listbox"],
+html[data-alledrogo="on"] [role="menu"],
+html[data-alledrogo="on"] [role="tree"] {
+  background-color: var(--adm-surface-2) !important;
+  color: var(--adm-text) !important;
+  border-color: var(--adm-border) !important;
+  box-shadow: 0 8px 24px var(--adm-shadow) !important;
+}
+
+html[data-alledrogo="on"] [role="option"],
+html[data-alledrogo="on"] [role="menuitem"],
+html[data-alledrogo="on"] [role="menuitemcheckbox"],
+html[data-alledrogo="on"] [role="menuitemradio"],
+html[data-alledrogo="on"] [role="treeitem"] {
+  color: var(--adm-text) !important;
+}
+
+html[data-alledrogo="on"] :is([role="option"], [role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"], [role="treeitem"]):is(:hover, [aria-selected="true"], [data-highlighted], [aria-current="true"]) {
+  background-color: var(--adm-surface-3) !important;
+}
+
+html[data-alledrogo="on"] [role="tooltip"] {
+  background-color: var(--adm-surface-3) !important;
+  color: var(--adm-text) !important;
+  border-color: var(--adm-border) !important;
+}
+
+/* Zakładki i elementy zaznaczone */
+html[data-alledrogo="on"] [role="tab"][aria-selected="true"] {
+  border-color: var(--adm-accent) !important;
+}
+
+/* Pasek przewijania (Chromium) */
+html[data-alledrogo="on"] ::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  background: var(--adm-bg);
+}
+
+html[data-alledrogo="on"] ::-webkit-scrollbar-thumb {
+  background: #4a4a4a;
+  border: 3px solid var(--adm-bg);
+  border-radius: 8px;
+}
+
+html[data-alledrogo="on"] ::-webkit-scrollbar-thumb:hover {
+  background: #5e5e5e;
+}
+
+html[data-alledrogo="on"] ::-webkit-scrollbar-corner {
+  background: var(--adm-bg);
+}
+
+/* Ramki z treścią w tym samym serwisie (np. opisy ofert w iframe) */
+html[data-alledrogo="on"] iframe {
+  color-scheme: normal;
+}
+
+/* ---------------------------------------------------------------------- */
+/* 4. Elementy oznaczone przez skrypt (content/content.js)                */
+/*    Allegro wpisuje część kolorów na sztywno w hashowanych klasach.      */
+/*    Skrypt czyta obliczony styl, klasyfikuje kolor i nadaje atrybut.     */
+/* ---------------------------------------------------------------------- */
+
+/* Tła */
+html[data-alledrogo="on"] [data-alledrogo-bg="base"] {
+  background-color: var(--adm-bg) !important;
+}
+
+html[data-alledrogo="on"] [data-alledrogo-bg="surface"] {
+  background-color: var(--adm-surface) !important;
+}
+
+html[data-alledrogo="on"] [data-alledrogo-bg="raised"] {
+  background-color: var(--adm-surface-2) !important;
+}
+
+html[data-alledrogo="on"] [data-alledrogo-bg="muted"] {
+  background-color: var(--adm-surface-3) !important;
+}
+
+html[data-alledrogo="on"] [data-alledrogo-bg="glass"] {
+  background-color: var(--adm-glass) !important;
+}
+
+/* Jasne tło wpisane jako gradient/obraz-kolor — zostawiamy obraz, zmieniamy kolor */
+html[data-alledrogo="on"] [data-alledrogo-bg="tint"] {
+  background-color: var(--alledrogo-bg) !important;
+}
+
+/* Interaktywne powierzchnie: delikatny hover */
+html[data-alledrogo="on"] :is(a, button, [role="button"], label)[data-alledrogo-bg]:hover {
+  background-color: var(--adm-surface-3) !important;
+}
+
+/* Element, który dopiero pod :hover dostaje jasne tło */
+html[data-alledrogo="on"] [data-alledrogo-hbg]:hover {
+  background-color: var(--adm-surface-3) !important;
+}
+
+/* Tekst */
+html[data-alledrogo="on"] [data-alledrogo-fg="primary"] {
+  color: var(--adm-text) !important;
+}
+
+html[data-alledrogo="on"] [data-alledrogo-fg="secondary"] {
+  color: var(--adm-text-2) !important;
+}
+
+html[data-alledrogo="on"] [data-alledrogo-fg="tint"] {
+  color: var(--alledrogo-fg) !important;
+}
+
+/* Obramowania */
+html[data-alledrogo="on"] [data-alledrogo-bd="1"] {
+  border-color: var(--adm-border) !important;
+}
+
+/* Jednokolorowe ikony SVG (inline): ciemne wypełnienie -> jasne */
+html[data-alledrogo="on"] [data-alledrogo-fill="1"] {
+  fill: var(--adm-text) !important;
+}
+
+html[data-alledrogo="on"] [data-alledrogo-stroke="1"] {
+  stroke: var(--adm-text) !important;
+}
+
+/* Jednokolorowe ikony Allegro ładowane jako <img src="...svg">
+   (czarne glify Metrum/Dune). Zdjęcia i logotypy NIE są oznaczane. */
+html[data-alledrogo="on"] img[data-alledrogo-icon="mono"] {
+  filter: invert(0.9) !important;
+}
+
+/* ---------------------------------------------------------------------- */
+/* 5. Multimedia — nigdy nie przekolorowujemy                             */
+/* ---------------------------------------------------------------------- */
+html[data-alledrogo="on"] :is(img:not([data-alledrogo-icon]), picture, video, canvas, embed, object) {
+  filter: none;
+  mix-blend-mode: normal;
+}
