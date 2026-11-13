@@ -307,6 +307,21 @@
     img.setAttribute('data-alledrogo-icon', under >= 0 && under <= 0.45 ? 'mono' : 'none');
   }
 
+  // W trakcie przejścia CSS (transition) styl obliczony zwraca wartości
+  // pośrednie — wtedy odkładamy klasyfikację do końca animacji.
+  function isTransitioning(el) {
+    if (!el.getAnimations) return false;
+    for (const a of el.getAnimations()) {
+      const prop = a.transitionProperty;
+      if (prop && /color|background|border|all/.test(prop) && a.playState === 'running') return true;
+    }
+    return false;
+  }
+
+  function retryLater(el) {
+    setTimeout(() => painter.enqueue(el), 400);
+  }
+
   function processElement(el) {
     const tag = el.tagName;
     if (tag === 'IMG') { classifyImg(el); return; }
@@ -315,6 +330,7 @@
     if (el.closest && el.closest('svg')) return;
     const cs = getComputedStyle(el);
     if (cs.display === 'none') return;
+    if (isTransitioning(el)) { retryLater(el); return; }
     classifyBackground(el, cs);
     classifyBorder(el, cs);
   }
@@ -323,6 +339,7 @@
     if (SKIP_TAGS.has(el.tagName) || el.localName === 'svg') return;
     const cs = getComputedStyle(el);
     if (cs.display === 'none') return;
+    if (isTransitioning(el)) return; // processElement już zaplanował ponowienie
     classifyText(el, cs);
   }
 
