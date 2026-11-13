@@ -1,0 +1,21 @@
+# Systemowe
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Edytory
+.vscode/
+.idea/
+*.swp
+
+# Paczki rozszerzenia (budowane lokalnie)
+*.zip
+*.xpi
+*.crx
+*.pem
+web-ext-artifacts/
+
+# Node / Python (narzędzia pomocnicze)
+node_modules/
+__pycache__/
+*.pyc
